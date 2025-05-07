@@ -1,0 +1,27 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+.env.*
+
+# Streamlit specific files
+.streamlit/
+
+# Jupyter Notebook checkpoints (if applicable)
+.ipynb_checkpoints/
+
+# VSCode settings (if using devcontainers)
+.vscode/
+.devcontainer/
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

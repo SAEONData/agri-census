@@ -1,0 +1,22 @@
+# requirements.txt
+
+# Streamlit & visualization
+streamlit
+plotly
+pandas
+numpy
+
+# PostgreSQL DB connector
+psycopg2-binary
+
+# Spatial (PostGIS)
+geopandas
+shapely
+sqlalchemy
+
+# Optional: Geo plotting
+folium
+pydeck
+
+# Caching and utility
+python-dotenv
