@@ -22,7 +22,13 @@ engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 @st.cache_data(ttl=600)
 def load_coca_view():
     """Load data from the materialized view for use in all modules."""
-    query = "SELECT * FROM public.coca_agriculture_with_boundaries"
+    query = """
+            SELECT 
+            unique_id, province, district_municipality, census_region,
+            indicator, sub_indicator, sub_sub_indicator,
+            unit, y2007, y2017, farming_units 
+       FROM public.coca_agriculture_with_boundaries
+       """
     return pd.read_sql(query, engine)
 
 @st.cache_data(ttl=600)
@@ -85,4 +91,12 @@ fig = px.pie(province_dist, names="province", values="count",
              title="Record Distribution by Province",
              hole=0.4)
 st.plotly_chart(fig, use_container_width=True)
+
+
+@st.cache_data(ttl=3600)
+def get_distinct_indicators(column):
+    query = f"SELECT DISTINCT {column} FROM public.coca_agriculture_with_boundaries WHERE {column} IS NOT NULL"
+    df = pd.read_sql(query, engine)
+    return sorted(df[column].dropna().unique())
+
 

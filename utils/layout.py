@@ -64,3 +64,26 @@ You can:
 - Export CSV for deeper analysis
 """
 }
+
+
+UI_TEXT = {
+    # Filter Controls
+    "reset_button": "Reset",
+    "reset_tooltip": "Click to clear all selected filters and view the full dataset.",
+    "apply_button": "Apply",
+    "apply_tooltip": "Apply selected filters to update the view.",
+
+    # Data Export
+    "export_button": "Export CSV",
+    "export_tooltip": "Download the filtered dataset as a CSV file.",
+
+    # Map Customization (future)
+    "toggle_polygon": "🗺️ Show Region Boundaries",
+    "toggle_centroid": "📍 Show Centroids",
+    "color_scale_label": "🎨 Color Scale",
+
+    # General
+    "loading": "⏳ Loading data...",
+    "no_data": "⚠️ No data matches your current filters.",
+}
+

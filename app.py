@@ -1,23 +1,21 @@
 # app.py
+
 import streamlit as st
-from views import home
+from views import home, summary
 
-home.show()
+# Sidebar routing
+#st.set_page_config(page_title="CoCA 2017 Dashboard", layout="wide")
 
+PAGES = {
+    "🏠 Home": home.show,
+    "📊 Summary": summary.show,
+    # More to come:
+    # "🗺️ Map Explorer": map.show,
+    # "📋 Data Explorer": table.show,
+    # "📈 Time Comparison": time.show,
+    # "📚 Methodology & About": about.show,
+}
 
-# app.py
-#import streamlit as st
-#from views import home, summary, map, table, indicator, time
-
-#pages = {
-#    "Home": home.show,
-#    "Summary Dashboard": summary.show,
-#    "Indicator Explorer": indicator.show,
-#    "Map Explorer": map.show,
-#    "Data Explorer": table.show,
-#    "Time Comparison": time.show
-#}
-
-#st.sidebar.title("📌 CoCA 2017 Navigation")
-#page = st.sidebar.radio("Go to", list(pages.keys()))
-#pages[page]()
+st.sidebar.title("📌 Menu")
+selection = st.sidebar.radio("Go to:", list(PAGES.keys()))
+PAGES[selection]()
