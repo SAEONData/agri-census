@@ -19,6 +19,6 @@ RUN chown -R cocaagri:agrigrp /app
 
 USER cocaagri
 
-EXPOSE 8502
+EXPOSE 8501
 
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8502", "--server.address=0.0.0.0", "--server.headless=true", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--server.baseUrlPath=agri-census"]
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--server.baseUrlPath=agri-census"]

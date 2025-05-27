@@ -10,14 +10,14 @@ services:
     ports:
       - "8502:8501"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8502/agri-census/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8501/agri-census/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
     restart: unless-stopped
     environment:
-      STREAMLIT_SERVER_PORT: 8502
+      STREAMLIT_SERVER_PORT: 8501
       STREAMLIT_SERVER_ADDRESS: 0.0.0.0
       STREAMLIT_SERVER_HEADLESS: "true"
       STREAMLIT_SERVER_ENABLECORS: "false"
