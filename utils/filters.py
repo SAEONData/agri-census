@@ -37,11 +37,14 @@ def render_sidebar_filters():
 
     st.sidebar.header("🔎 Filter Data")
 
-    province = st.sidebar.selectbox("Province", ss['province_list'], key="filter.province")
-    district = st.sidebar.selectbox("District Municipality", ss['district_list'], key="filter.district")
+    # Multi-select: Province & District
+    province = st.sidebar.multiselect("Province", ss['province_list'][1:], key="filter.province")
+    district = st.sidebar.multiselect("District Municipality", ss['district_list'][1:], key="filter.district")
+
+    # Single-select: Indicator
     indicator = st.sidebar.selectbox("Indicator", ss['indicator_list'], key="filter.indicator")
 
-    # Cascading: sub_indicator depends on indicator
+    # Cascading sub_indicator
     if indicator != "All":
         sub_df = df[df["indicator"] == indicator]
         sub_indicator_list = ["All"] + sorted(sub_df["sub_indicator"].dropna().unique())
@@ -50,6 +53,7 @@ def render_sidebar_filters():
 
     sub_indicator = st.sidebar.selectbox("Sub-Indicator", sub_indicator_list, key="filter.sub_indicator")
 
+    # Cascading sub_sub_indicator
     if sub_indicator != "All":
         sub_sub_df = df[df["sub_indicator"] == sub_indicator]
         sub_sub_indicator_list = ["All"] + sorted(sub_sub_df["sub_sub_indicator"].dropna().unique())
@@ -66,11 +70,11 @@ def render_sidebar_filters():
     )
     st.sidebar.divider()
 
-    # Apply filters
-    if ss["filter.province"] != "All":
-        df = df[df['province'] == ss["filter.province"]]
-    if ss["filter.district"] != "All":
-        df = df[df['district_municipality'] == ss["filter.district"]]
+    # --- Apply Filters ---
+    if ss["filter.province"]:
+        df = df[df['province'].isin(ss["filter.province"])]
+    if ss["filter.district"]:
+        df = df[df['district_municipality'].isin(ss["filter.district"])]
     if ss["filter.indicator"] != "All":
         df = df[df['indicator'] == ss["filter.indicator"]]
     if ss["filter.sub_indicator"] != "All":
@@ -79,3 +83,21 @@ def render_sidebar_filters():
         df = df[df['sub_sub_indicator'] == ss["filter.sub_sub_indicator"]]
 
     return df
+
+
+
+
+def get_filter_summary(df):
+    ss = st.session_state
+    filters = []
+
+    if ss.get("filter.province"):
+        filters.append(", ".join(ss["filter.province"]))
+    if ss.get("filter.indicator") and ss["filter.indicator"] != "All":
+        filters.append(ss["filter.indicator"])
+    if ss.get("filter.sub_indicator") and ss["filter.sub_indicator"] != "All":
+        filters.append(ss["filter.sub_indicator"])
+
+    filter_text = " > ".join(filters) if filters else "all provinces and indicators"
+    return f"**Showing {len(df):,} records filtered by:** {filter_text}"
+

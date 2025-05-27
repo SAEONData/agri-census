@@ -5,13 +5,14 @@ import plotly.express as px
 from utils.filters import render_sidebar_filters
 from utils.layout import PAGE_HELP_TEXT
 from utils.colors import get_sub_indicator_colors
+from utils.filters import render_sidebar_filters, get_filter_summary
 
 def show():
     st.title("📊 Summary")
     st.markdown(PAGE_HELP_TEXT["summary"])
 
-    # Load filtered dataset from sidebar
     df = render_sidebar_filters()
+    st.markdown(get_filter_summary(df))
 
     if df.empty:
         st.warning("No data matches your current filters.")
