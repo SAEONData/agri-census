@@ -10,7 +10,7 @@ services:
     ports:
       - "8502:8501"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8501/agri-census/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8502/agri-census/"]
       interval: 30s
       timeout: 10s
       retries: 3
