@@ -7,7 +7,6 @@ from utils.colors import get_indicator_colors
 import plotly.express as px
 
 def show():
-    # Header logos
     col1, col2 = st.columns([1, 1])
     with col1:
         st.image("images/saeon_logo.png", width=180)
@@ -15,12 +14,12 @@ def show():
         st.image("images/statssa_logo.png", width=180)
 
     st.title("2017 Agricultural Census Dashboard")
-    st.subheader("A decision-support tool by SAEON/NRF")
+    st.subheader("A decision-support tool by SAEON/Stats SA")
     st.markdown("---")
     st.markdown("This dashboard provides insights into the 2017 Agricultural Census data, focusing on farm land census. The data is sourced from the Stats SA 2017 Agricultural Census and is made available through the SAEON/NRF platform.")
     st.markdown("---")
     
-    st.markdown("### 📈 CoCA 2017 at a Glance")
+    st.markdown("### 📈 Census of Commercial Agriculture (CoCA) 2017 at a Glance")
     st.markdown("The following metrics provide a snapshot of the 2017 Agricultural Census data.")
     
     stats = get_summary_stats()
@@ -52,7 +51,6 @@ def show():
     
     st.plotly_chart(fig1, use_container_width=True)
 
-    # Province Distribution Chart
     st.markdown("#### 🗺️ Distribution by Province")
     province_dist = get_province_distribution()
     fig2 = px.pie(
@@ -61,7 +59,6 @@ def show():
     )
     st.plotly_chart(fig2, use_container_width=True)
     
-    # Contextual intro and links
     st.markdown(PAGE_HELP_TEXT["home"])
     st.markdown("---")
     st.markdown(PAGE_HELP_TEXT["home_links"])
