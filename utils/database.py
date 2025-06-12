@@ -1,8 +1,9 @@
-# utils/database.py
 import os
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import pandas as pd
+from sqlalchemy import text
+import geopandas as gpd
 import streamlit as st
 import plotly.express as px
 
@@ -15,21 +16,54 @@ DB_HOST = os.getenv("POSTGRES_HOST")
 DB_PORT = os.getenv("POSTGRES_PORT")
 DB_NAME = os.getenv("POSTGRES_DB")
 
-# SQLAlchemy engine
 DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 @st.cache_data(ttl=600)
-def load_coca_view():
-    """Load data from the materialized view for use in all modules."""
-    query = """
-            SELECT 
-            unique_id, province, district_municipality, census_region,
-            indicator, sub_indicator, sub_sub_indicator,
-            unit, y2007, y2017, farming_units 
-       FROM public.coca_agriculture_with_boundaries
-       """
-    return pd.read_sql(query, engine)
+def load_coca_view(province=None, district=None, indicator=None, sub_indicator=None):
+    """
+    Load data from the materialized view with optional filtering.
+    Returns filtered pandas DataFrame.
+    """
+    conditions = []
+    params = {}
+
+    if province:
+        conditions.append("province = ANY(:province)")
+        params["province"] = province
+
+    if district:
+        conditions.append("district_municipality = ANY(:district)")
+        params["district"] = district
+
+    if indicator:
+        conditions.append("indicator = :indicator")
+        params["indicator"] = indicator
+
+    if sub_indicator:
+        conditions.append("sub_indicator = :sub_indicator")
+        params["sub_indicator"] = sub_indicator
+
+    where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+
+    query = f"""
+        SELECT 
+            province,
+            district_municipality,
+            census_region,
+            indicator,
+            sub_indicator,
+            sub_indicator_number,
+            sub_sub_indicator,
+            unit,
+            y2007,
+            y2017,
+            farming_units
+        FROM public.coca_agriculture_with_boundaries
+        {where_clause}
+    """
+
+    return pd.read_sql(text(query), engine, params=params)
 
 @st.cache_data(ttl=600)
 def get_indicator_list():
@@ -99,4 +133,100 @@ def get_distinct_indicators(column):
     df = pd.read_sql(query, engine)
     return sorted(df[column].dropna().unique())
 
+
+@st.cache_data(ttl=3600)
+def load_spatial_query(query: str, params: dict = None, geom_col: str = "geometry") -> gpd.GeoDataFrame:
+    """
+    Loads a spatial query using GeoPandas from PostGIS.
+
+    Args:
+        query (str): SQL query string with spatial column included.
+        params (dict, optional): SQL parameters to bind.
+        geom_col (str): Name of the geometry column in the result.
+
+    Returns:
+        gpd.GeoDataFrame: Geo-enabled DataFrame for mapping.
+    """
+    try:
+        gdf = gpd.read_postgis(query, con=engine, params=params, geom_col=geom_col)
+        return gdf
+    except Exception as e:
+        print(f"[ERROR] Spatial query failed: {e}")
+        return gpd.GeoDataFrame()
+
+
+@st.cache_data(ttl=3600)
+def farming_units_by_prov(province=None, district=None, indicator=None, sub_indicator=None):
+    """
+    Aggregate farming_units by province based on optional filters.
+    Returns a pandas DataFrame with 'province', 'farming_units'.
+    """
+    conditions = []
+    params = {}
+
+    if province:
+        conditions.append("province = ANY(:province)")
+        params["province"] = province
+
+    if district:
+        conditions.append("district_municipality = ANY(:district)")
+        params["district"] = district
+
+    if indicator:
+        conditions.append("indicator = :indicator")
+        params["indicator"] = indicator
+
+    if sub_indicator:
+        conditions.append("sub_indicator = :sub_indicator")
+        params["sub_indicator"] = sub_indicator
+
+    where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+
+    query = f"""
+        SELECT province, SUM(farming_units) AS farming_units
+        FROM public.coca_agriculture_with_boundaries
+        {where_clause}
+        GROUP BY province
+    """
+
+    return pd.read_sql(text(query), engine, params=params)
+
+
+
+
+@st.cache_data(ttl=3600)
+def farming_units_by_district(province=None, district=None, indicator=None, sub_indicator=None):
+    """
+    Aggregate farming_units by district_municipality based on optional filters.
+    Returns a DataFrame with 'district_municipality', 'farming_units'.
+    """
+    conditions = []
+    params = {}
+
+    if province:
+        conditions.append("province = ANY(:province)")
+        params["province"] = province
+
+    if district:
+        conditions.append("district_municipality = ANY(:district)")
+        params["district"] = district
+
+    if indicator:
+        conditions.append("indicator = :indicator")
+        params["indicator"] = indicator
+
+    if sub_indicator:
+        conditions.append("sub_indicator = :sub_indicator")
+        params["sub_indicator"] = sub_indicator
+
+    where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+
+    query = f"""
+        SELECT district_municipality, SUM(farming_units) AS farming_units
+        FROM public.coca_agriculture_with_boundaries
+        {where_clause}
+        GROUP BY district_municipality
+    """
+
+    return pd.read_sql(text(query), engine, params=params)
 

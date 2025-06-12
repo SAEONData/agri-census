@@ -1,16 +1,13 @@
-# app.py
-
 import streamlit as st
-from views import home, summary
+from views import home, summary, map
 
 # Sidebar routing
-#st.set_page_config(page_title="CoCA 2017 Dashboard", layout="wide")
+st.set_page_config(page_title="CoCA 2017 Census", layout="wide")
 
 PAGES = {
     "🏠 Home": home.show,
     "📊 Summary": summary.show,
-    # More to come:
-    # "🗺️ Map Explorer": map.show,
+    "🗺️ Map Explorer": map.show,
     # "📋 Data Explorer": table.show,
     # "📈 Time Comparison": time.show,
     # "📚 Methodology & About": about.show,

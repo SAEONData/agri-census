@@ -20,3 +20,5 @@ pydeck
 
 # Caching and utility
 python-dotenv
+
+rapidfuzz==3.6.2

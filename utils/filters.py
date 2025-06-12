@@ -1,7 +1,7 @@
-# utils/filters.py
 import streamlit as st
 from utils.database import load_coca_view
 from utils.layout import UI_TEXT
+import pandas as pd
 
 @st.cache_data(ttl=600)
 def load_unique_filters(df, column_name):
@@ -13,6 +13,7 @@ def set_filters_to_default():
     df = load_coca_view()
 
     ss['filter.disabled'] = False
+    ss['filter.applied']= False
 
     ss['province_list'] = sorted(df['province'].dropna().unique())
     ss['district_list'] = sorted(df['district_municipality'].dropna().unique())
@@ -61,13 +62,23 @@ def render_sidebar_filters():
 
     sub_sub_indicator = st.sidebar.selectbox("Sub-Sub Indicator", [None] + sub_sub_indicator_list, format_func=lambda x: "All" if x is None else x, key="filter.sub_sub_indicator")
 
-    # Reset button
-    st.sidebar.button(
-        UI_TEXT["reset_button"],
-        help=UI_TEXT["reset_tooltip"],
-        on_click=set_filters_to_default
-    )
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        st.button(
+            UI_TEXT["reset_button"],
+            help=UI_TEXT["reset_tooltip"],
+            on_click=set_filters_to_default
+        )
+
+    with col2:
+        if st.button(UI_TEXT["apply_button"], help=UI_TEXT["apply_tooltip"]):
+            ss["filter.applied"] = True
+            st.rerun()
+            
     st.sidebar.divider()
+    
+    if not ss.get("filter.applied", False):
+        return pd.DataFrame()
 
     # --- Apply Filters ---
     if ss.get("filter.province"):
