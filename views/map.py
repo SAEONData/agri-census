@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import json
 import re
+import unicodedata
 from rapidfuzz import process
 from utils.filters import render_sidebar_filters
 from utils.layout import PAGE_HELP_TEXT
@@ -26,10 +27,8 @@ def show():
     st.title("🖼️ Map Explorer")
     st.markdown(PAGE_HELP_TEXT.get("map", "Explore spatial patterns in the Agricultural Census."))
 
-    # Select administrative level
-    level = st.radio("Select map level", options=["Province", "District"], horizontal=True)
+    level = st.radio("Select level", options=["Province", "District"], horizontal=True)
 
-    # Province dropdown
     province_options = list(province_iso_map.keys())
     selected_province = st.selectbox("Filter by Province", options=["All"] + province_options)
 
@@ -40,7 +39,6 @@ def show():
 
     province = [selected_province] if selected_province != "All" else []
 
-    # Decide level logic
     if level == "Province":
 
         df = farming_units_by_prov(
@@ -81,18 +79,25 @@ def show():
             sa_geojson = json.load(f)
 
         gadm_names = [f["properties"]["NAME_2"] for f in sa_geojson["features"]]
+         
+        
+        def normalize(text):
+            return unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode().lower()
 
         def clean_and_match(name):
             cleaned = re.sub(r"\s+(District|Metropolitan) Municipality\s*(\([^)]+\))?", "", name, flags=re.IGNORECASE)
             cleaned = cleaned.replace(" ", "")
-            match, score, _ = process.extractOne(cleaned, gadm_names)
+            cleaned = normalize(cleaned)
+            
+            gadm_names_normalized = [normalize(n) for n in gadm_names]
+
+            match, score, _ = process.extractOne(cleaned, gadm_names_normalized)
             return match if score >= 80 else None
 
         df["gadm_district"] = df["district_municipality"].apply(clean_and_match)
         df = df.dropna(subset=["farming_units", "gadm_district"])
         locations = df["gadm_district"]
 
-    # Choropleth map
     fig = go.Figure(
         go.Choropleth(
             geojson=sa_geojson,

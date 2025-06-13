@@ -192,8 +192,6 @@ def farming_units_by_prov(province=None, district=None, indicator=None, sub_indi
     return pd.read_sql(text(query), engine, params=params)
 
 
-
-
 @st.cache_data(ttl=3600)
 def farming_units_by_district(province=None, district=None, indicator=None, sub_indicator=None):
     """
