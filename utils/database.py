@@ -19,7 +19,7 @@ DB_NAME = os.getenv("POSTGRES_DB")
 DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def load_coca_view(province=None, district=None, indicator=None, sub_indicator=None):
     """
     Load data from the materialized view with optional filtering.
@@ -56,29 +56,29 @@ def load_coca_view(province=None, district=None, indicator=None, sub_indicator=N
             sub_indicator_number,
             sub_sub_indicator,
             unit,
-            y2007,
             y2017,
             farming_units
-        FROM public.coca_agriculture_with_boundaries
+        FROM public.coca_agriculture_with_boundaries 
+        ORDER BY province, district_municipality, indicator, sub_indicator
         {where_clause}
     """
 
     return pd.read_sql(text(query), engine, params=params)
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def get_indicator_list():
     """Get list of available indicators for sidebar filters."""
     query = "SELECT DISTINCT indicator FROM public.coca_agriculture_with_boundaries ORDER BY indicator;"
     return pd.read_sql(query, engine)['indicator'].dropna().tolist()
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def get_region_list():
     """Get list of available regions for sidebar filters."""
     query = "SELECT DISTINCT region FROM public.coca_agriculture_with_boundaries ORDER BY region;"
     return pd.read_sql(query, engine)['region'].dropna().tolist()
 
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def get_summary_stats():
     """Load only aggregated data needed for the home page metrics."""
     query = """
@@ -91,7 +91,7 @@ def get_summary_stats():
     return pd.read_sql(query, engine).iloc[0]
 
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def get_top_indicators():
     query = """
         SELECT indicator, COUNT(*) AS count
@@ -110,7 +110,7 @@ fig = px.bar(top_indicators, x="count", y="indicator", orientation="h",
 st.plotly_chart(fig, use_container_width=True)
 
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def get_province_distribution():
     query = """
         SELECT province, COUNT(*) AS count
@@ -127,14 +127,14 @@ fig = px.pie(province_dist, names="province", values="count",
 st.plotly_chart(fig, use_container_width=True)
 
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=86400)
 def get_distinct_indicators(column):
     query = f"SELECT DISTINCT {column} FROM public.coca_agriculture_with_boundaries WHERE {column} IS NOT NULL"
     df = pd.read_sql(query, engine)
     return sorted(df[column].dropna().unique())
 
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=86400)
 def load_spatial_query(query: str, params: dict = None, geom_col: str = "geometry") -> gpd.GeoDataFrame:
     """
     Loads a spatial query using GeoPandas from PostGIS.
@@ -155,7 +155,7 @@ def load_spatial_query(query: str, params: dict = None, geom_col: str = "geometr
         return gpd.GeoDataFrame()
 
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=86400)
 def farming_units_by_prov(province=None, district=None, indicator=None, sub_indicator=None):
     """
     Aggregate farming_units by province based on optional filters.
@@ -192,7 +192,7 @@ def farming_units_by_prov(province=None, district=None, indicator=None, sub_indi
     return pd.read_sql(text(query), engine, params=params)
 
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=86400)
 def farming_units_by_district(province=None, district=None, indicator=None, sub_indicator=None):
     """
     Aggregate farming_units by district_municipality based on optional filters.

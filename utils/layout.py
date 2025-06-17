@@ -1,11 +1,8 @@
-# utils/layout.py
-
 PAGE_HELP_TEXT = {
     "home": """
 The **Census of Commercial Agriculture (CoCA) 2017** provides a comprehensive overview of South Africa’s agricultural sector.
 
 This dashboard enables:
-- 📊 Comparative analysis of data from **2007 vs 2017**
 - 🗺️ Spatial visualization by province, district, and census region
 - 🌱 Filtering by agricultural indicators, land use, inputs, employment, and more
 
@@ -16,8 +13,8 @@ It supports planning aligned with:
 
     "home_links": """
 📎 **Useful Links**:
+- [SARVA Portal](https://catalogue.saeon.ac.za/records/10.15493/SARVA.301020-1)
 - [Stats SA Census 2017 Report](https://www.statssa.gov.za/?page_id=1854&PPN=Report-11-02-01)
-- [SARVA Portal](https://sarva.saeon.ac.za)
 """,
 
     "summary": """
