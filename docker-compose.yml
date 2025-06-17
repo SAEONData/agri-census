@@ -1,6 +1,6 @@
 services:
   cocaagri-census:
-    image: agri-census
+    image: agri-census:${TAG}
     container_name: agri-census
     build:
       context: .
@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8501:8501"
+      - "8502:8501"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8501/agri-census/"]
       interval: 30s
