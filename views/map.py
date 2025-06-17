@@ -105,7 +105,7 @@ def show():
         visible=False,
         fitbounds="locations",
         showcountries=False,
-        showcoastlines=True,
+        showcoastlines=False,
         showland=True,
         landcolor="lightgray"
     )
