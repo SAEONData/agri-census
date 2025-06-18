@@ -29,9 +29,9 @@ Use the filters on the left to:
 Explore the **geographic distribution** of agricultural data.
 
 Features:
-- 🔎 Bubble or choropleth maps per indicator
+- 🔎 Choropleth maps per indicator
 - 🗺️ Drill-down to districts and census regions
-- 🧭 Spatial patterns in employment, land, inputs, outputs
+- 🧭 Spatial patterns in farming units distributions across South Africa. 
 """,
 
     "indicator": """
