@@ -10,7 +10,8 @@ def show():
     st.markdown("---")
     st.markdown("This dashboard provides insights into the 2017 Agricultural Census data, focusing on farm land census. The data is sourced from the Stats SA 2017 Agricultural Census and is made available through the SAEON/NRF platform.")
     st.markdown("---")
-    
+    #galaletsang testing commit and push
+    #galaletsang test 2
     st.markdown("### 📈 South African Agriculture at a Glance")
     st.markdown(PAGE_HELP_TEXT["home"])
     st.markdown("---")
