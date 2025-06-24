@@ -5,7 +5,7 @@ from utils.colors import get_indicator_colors
 import plotly.express as px
 
 def show():
-    st.title("2017 Census of Commercial Agriculture (CoCA) Dashboard")
+    st.title("2017 Census of Commercial Agriculture (CoCAs) Dashboard")
     st.subheader("A decision-support tool by SAEON/Stats SA")
     st.markdown("---")
     st.markdown("This dashboard provides insights into the 2017 Agricultural Census data, focusing on farm land census. The data is sourced from the Stats SA 2017 Agricultural Census and is made available through the SAEON/NRF platform.")
